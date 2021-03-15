@@ -19,12 +19,12 @@ def RMSE(y, y_hat):
     return np.sqrt(sum((y - y_hat) ** 2) / len(y))
 
 
-def gradientDescent(x, y, x_test, y_test, theta, alpha, iterations=1500):
+def gradientDescent(x, y, x_test, y_test, theta, alpha):
     RMSEs = []
     m = len(x)
-    rmse = 200
+    rmse = 900
 
-    while rmse > 90:
+    while rmse > 100:
         for j in range(len(theta)):
             gradient = 0
             for i in range(m):
@@ -45,29 +45,27 @@ def generateZValues(x, theta):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('pokemon_alopez247.csv')
+    df = pd.read_csv('pokemon_alopez247.csv')
 
-    total = np.asarray(data['Total'])
-    special_attack = np.asarray(data['Sp_Atk'])
-    catch_rate = np.asarray(data['Catch_Rate'])
+    total = np.asarray(df['Total'])
+    special_attack = np.asarray(df['Sp_Atk'])
+    catch_rate = np.asarray(df['Catch_Rate'])
 
-    temp = np.asarray([[tot, spec_atk] for tot, spec_atk in zip(total, special_attack)])  # Gets our features
-    training_features, test_features = temp[:int(len(temp) * 0.7)], temp[int(
-        len(temp) * 0.3):]  # Splits our features in half between training and testing
-    temp = np.asarray([rate for rate in catch_rate])  # Gets our output
-    training_output, test_output = temp[:int(len(temp) * 0.7)], temp[int(
-        len(temp) * 0.3):]  # Splits our outputs in half between training and testing
+    x = np.asarray([[tot, spec_atk] for tot, spec_atk in zip(total, special_attack)])
+    x_train, x_test = x[:int(len(x) * 0.7)], x[int(len(x) * 0.3):]
+
+    y = np.asarray([rate for rate in catch_rate])  # Gets our output
+    y_train, y_train = y[:int(len(y) * 0.7)], y[int( len(y) * 0.3):]  # Splits our outputs in half between training and testing
     theta_init = np.random.uniform(0.0, 1.0, size=2)
 
     alpha = 0.00001
     n = 350
-    thetas, rmses = gradientDescent(training_features,
-                                training_output,
-                                test_features,
-                                test_output,
+    thetas, rmses = gradientDescent(x_train,
+                                y_train,
+                                x_test,
+                                y_train,
                                 theta_init,
-                                alpha,
-                                iterations=n)
+                                alpha)
 
     plt.plot(rmses)
     plt.title(f'RMSE convergence over {len(rmses)} iterations')
