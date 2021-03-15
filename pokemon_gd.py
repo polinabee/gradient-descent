@@ -51,7 +51,6 @@ if __name__ == '__main__':
     theta_init = np.random.uniform(0.0, 1.0, size=2)
 
     alpha = 0.00001
-    n = 350
     thetas, rmses = gradientDescent(x_train,
                                 y_train,
                                 x_test,
