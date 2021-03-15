@@ -19,12 +19,12 @@ def RMSE(y, y_hat):
     return np.sqrt(sum((y - y_hat) ** 2) / len(y))
 
 
-def gradientDescent(x, y, x_test, y_test, theta, alpha):
+def gradientDescent(x, y, x_test, y_test, theta, alpha,rmse_cutoff):
     RMSEs = []
     m = len(x)
-    rmse = 900
+    rmse = RMSE([hypothesis(x, theta) for x in x_test], y_test)
 
-    while rmse > 100:
+    while rmse > rmse_cutoff:
         for j in range(len(theta)):
             gradient = 0
             for i in range(m):
@@ -65,7 +65,8 @@ if __name__ == '__main__':
                                 x_test,
                                 y_train,
                                 theta_init,
-                                alpha)
+                                alpha,
+                                100)
 
     plt.plot(rmses)
     plt.title(f'RMSE convergence over {len(rmses)} iterations')
