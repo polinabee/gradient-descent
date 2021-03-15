@@ -1,3 +1,8 @@
+'''
+Implementation of gradient descent
+Source: https://medium.com/@DataStevenson/pokemon-stats-and-gradient-descent-for-multiple-variables-c9c077bbf9bd
+'''
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
