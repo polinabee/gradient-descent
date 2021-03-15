@@ -36,14 +36,6 @@ def gradientDescent(x, y, x_test, y_test, theta, alpha,rmse_cutoff):
         RMSEs.append(rmse)
     return theta, RMSEs
 
-
-def generateZValues(x, theta):
-    z_values = []
-    for i in range(len(x)):
-        z_values.append(hypothesis(x[i], theta))
-    return np.asarray(z_values)
-
-
 if __name__ == '__main__':
     df = pd.read_csv('pokemon_alopez247.csv')
 
