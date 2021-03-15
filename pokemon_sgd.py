@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,7 +17,9 @@ def RMSE(y, y_hat):
 def gradientDescent(x, y, x_test, y_test, theta, alpha, iterations=1500):
     RMSEs = []
     m = len(x)
-    for iteration in range(iterations):
+    rmse = 200
+
+    while rmse > 90:
         for j in range(len(theta)):
             gradient = 0
             for i in range(m):
@@ -26,7 +27,8 @@ def gradientDescent(x, y, x_test, y_test, theta, alpha, iterations=1500):
             gradient *= 1 / m
             theta[j] = theta[j] - (alpha * gradient)
         y_pred = [hypothesis(x, theta) for x in x_test]
-        RMSEs.append(RMSE(y_pred, y_test))
+        rmse = RMSE(y_pred, y_test)
+        RMSEs.append(rmse)
     return theta, RMSEs
 
 
@@ -63,5 +65,5 @@ if __name__ == '__main__':
                                 iterations=n)
 
     plt.plot(rmses)
-    plt.title(f'RMSE over {n} iterations')
+    plt.title(f'RMSE convergence over {len(rmses)} iterations')
     plt.show()
