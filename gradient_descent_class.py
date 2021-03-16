@@ -110,5 +110,6 @@ if __name__ == '__main__':
         gd = GradientDescent(loss=loss)
         error = gd.get_descent_rmse()
         plt.plot(error, label=loss)
+    plt.legend()
     plt.title(f'Comparing RMSE convergence of different loss functions over {len(error)} iterations')
     plt.show()
