@@ -1,6 +1,6 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
+import random
 
 
 def generate_data(a, d, n):
@@ -21,6 +21,25 @@ def dot_product(x, w):
 def RMSE(y, y_hat):
     return np.sqrt(sum((y - y_hat) ** 2) / len(y))
 
+
+def stochasticGradientDescent(x, y, x_test, y_test, theta, alpha, phi, rmse_cutoff):
+    RMSEs = []
+    m = len(x)
+    rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
+    iterations = 0
+
+    while rmse > rmse_cutoff:# and iterations < 18000:
+        print(theta)
+        iterations += 1
+        i = random.randint(0, len(x) - 1)  # random point index
+        for j in range(len(theta)):
+            gradient = phi(dot_product(x[i], theta) - y[i]) * x[i][j]
+            gradient *= 1 / m
+            theta[j] = theta[j] - (alpha * gradient)
+        y_pred = [dot_product(x, theta) for x in x_test]
+        rmse = RMSE(y_pred, y_test)
+        RMSEs.append(rmse)
+    return theta, RMSEs
 
 def gradientDescent(x, y, x_test, y_test, theta, alpha, phi, rmse_cutoff):
     RMSEs = []
@@ -58,13 +77,13 @@ if __name__ == '__main__':
 
     theta_init = np.random.uniform(0.0, 1.0, size=d)
 
-    tuning_param = 0.001
+    tuning_param = 0.01
 
     loss_functions = {'hinge': lambda x: max(0, 1 + x),
                       'exp': lambda x: np.exp(x),
                       'logistic': lambda x: np.log2(1 + np.exp(x))}
 
-    thetas, error = gradientDescent(x_train,
+    thetas, error = stochasticGradientDescent(x_train,
                                     y_train,
                                     x_test,
                                     y_train,
