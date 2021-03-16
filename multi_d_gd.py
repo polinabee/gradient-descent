@@ -14,11 +14,8 @@ def generate_data(a, d, n):
     return np.concatenate((x_vals, y_vals), axis=1)
 
 
-def hypothesis(x, theta):
-    return np.dot(
-        np.transpose(theta),
-        x
-    )
+def dot_product(x, w):
+    return w.T @ x
 
 
 def RMSE(y, y_hat):
@@ -28,7 +25,7 @@ def RMSE(y, y_hat):
 def gradientDescent(x, y, x_test, y_test, theta, alpha, rmse_cutoff):
     RMSEs = []
     m = len(x)
-    rmse = RMSE([hypothesis(x, theta) for x in x_test], y_test)
+    rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
     iterations = 0
 
     while rmse > rmse_cutoff and iterations < 3000:
@@ -37,10 +34,10 @@ def gradientDescent(x, y, x_test, y_test, theta, alpha, rmse_cutoff):
         for j in range(len(theta)):
             gradient = 0
             for i in range(m):
-                gradient += (hypothesis(x[i], theta) - y[i]) * x[i][j]
+                gradient += (dot_product(x[i], theta) - y[i]) * x[i][j]
             gradient *= 1 / m
             theta[j] = theta[j] - (alpha * gradient)
-        y_pred = [hypothesis(x, theta) for x in x_test]
+        y_pred = [dot_product(x, theta) for x in x_test]
         rmse = RMSE(y_pred, y_test)
         RMSEs.append(rmse)
     return theta, RMSEs
@@ -52,28 +49,23 @@ if __name__ == '__main__':
     n = 1000  # number of points
 
     data = generate_data(a, d, n)
-    df = pd.DataFrame(data=data)
-    df = df.rename(columns={0: 'X0', 1: 'X1', 2: 'X2', 3: 'X3', 4: 'Y'})
-
-    labels = np.asarray(df['Y'])
 
     x = np.asarray([a[:-1] for a in data])
     x_train, x_test = x[:int(len(x) * 0.7)], x[int(len(x) * 0.3):]
 
-    y = np.asarray([rate for rate in labels])  # Gets our output
-    y_train, y_train = y[:int(len(y) * 0.7)], y[int(
-        len(y) * 0.3):]  # Splits our outputs in half between training and testing
+    y = np.asarray([a[-1] for a in data])
+    y_train, y_train = y[:int(len(y) * 0.7)], y[int(len(y) * 0.3):]
     theta_init = np.random.uniform(0.0, 1.0, size=d)
 
-    alpha = 0.001
-    thetas, rmses = gradientDescent(x_train,
+    tuning_param = 0.001
+    thetas, error = gradientDescent(x_train,
                                     y_train,
                                     x_test,
                                     y_train,
                                     theta_init,
-                                    alpha,
+                                    tuning_param,
                                     0.8)
 
-    plt.plot(rmses)
-    plt.title(f'RMSE convergence over {len(rmses)} iterations')
+    plt.plot(error)
+    plt.title(f'RMSE convergence over {len(error)} iterations')
     plt.show()
