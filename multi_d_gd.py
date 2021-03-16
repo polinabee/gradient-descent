@@ -28,7 +28,7 @@ def stochasticGradientDescent(x, y, x_test, y_test, theta, alpha, phi, rmse_cuto
     rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
     iterations = 0
 
-    while rmse > rmse_cutoff and iterations < 10000:
+    while rmse > rmse_cutoff and iterations < 15000:
         print(theta)
         iterations += 1
         i = random.randint(0, len(x) - 1)  # random point index
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     x_train, x_test = x[:int(len(x) * 0.7)], x[int(len(x) * 0.3):]
 
     y = np.asarray([a[-1] for a in data])
-    y_train, y_train = y[:int(len(y) * 0.7)], y[int(len(y) * 0.3):]
+    y_train, y_test = y[:int(len(y) * 0.7)], y[int(len(y) * 0.3):]
 
     theta_init = np.random.uniform(0.0, 1.0, size=d)
 
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     thetas, error = stochasticGradientDescent(x_train,
                                     y_train,
                                     x_test,
-                                    y_train,
+                                    y_test,
                                     theta_init,
                                     tuning_param,
                                     loss_functions['hinge'],
