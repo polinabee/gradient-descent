@@ -2,9 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
+
 class GradientDescent:
     def __init__(self,
-                 data_params=(0.4, 4,1000),
+                 data_params=(0.4, 4, 1000),
                  step=0.1,
                  loss='hinge',
                  stochastic=True):
@@ -102,14 +103,31 @@ class GradientDescent:
         return RMSEs
 
 
-if __name__ == '__main__':
-    # data_dims = (5, 3, 1000)  # mu, d, n dimensions of the data distribution
-    # step_size = 0.1
-
-    for loss in ('hinge', 'exp','logistic'):
-        gd = GradientDescent(loss=loss)
+def plot_descent(mu, d, n, step):
+    for loss in ('hinge', 'exp', 'logistic'):
+        gd = GradientDescent(data_params=(mu, d, n),
+                             step=step,
+                             loss=loss)
         error = gd.get_descent_rmse()
         plt.plot(error, label=loss)
     plt.legend()
-    plt.title(f'Comparing RMSE convergence of different loss functions over {len(error)} iterations')
-    plt.show()
+    plt.title(f'RMSE convergence: {d}-dimensional data, {n} samples, tuning param: {step}')
+    return plt
+
+
+if __name__ == '__main__':
+    mu = 0.4  # mean
+    d = 4  # dimensions
+    n = 1000  # number of points
+    step = 0.1
+    for dim in [3, 5, 10]:
+        dim_plot = plot_descent(mu, dim, n, step)
+        dim_plot.show()
+
+    for sample_size in [200, 1000, 5000]:
+        n_plot = plot_descent(mu, d, sample_size, step)
+        n_plot.show()
+
+    for step_size in [0.1, 0.01, 0.001]:
+        step_plot = plot_descent(mu, d, n, step_size)
+        step_plot.show()
