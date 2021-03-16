@@ -28,7 +28,7 @@ def stochasticGradientDescent(x, y, x_test, y_test, theta, alpha, phi, rmse_cuto
     rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
     iterations = 0
 
-    while rmse > rmse_cutoff:# and iterations < 18000:
+    while rmse > rmse_cutoff and iterations < 10000:
         print(theta)
         iterations += 1
         i = random.randint(0, len(x) - 1)  # random point index
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     theta_init = np.random.uniform(0.0, 1.0, size=d)
 
-    tuning_param = 0.01
+    tuning_param = 0.1
 
     loss_functions = {'hinge': lambda x: max(0, 1 + x),
                       'exp': lambda x: np.exp(x),
@@ -90,7 +90,7 @@ if __name__ == '__main__':
                                     theta_init,
                                     tuning_param,
                                     loss_functions['hinge'],
-                                    0.7)
+                                    1)
 
     plt.plot(error)
     plt.title(f'RMSE convergence over {len(error)} iterations')
