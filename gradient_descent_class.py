@@ -105,9 +105,10 @@ class GradientDescent:
 if __name__ == '__main__':
     # data_dims = (5, 3, 1000)  # mu, d, n dimensions of the data distribution
     # step_size = 0.1
-    default_gd = GradientDescent()
 
-    error = default_gd.get_descent_rmse()
-    plt.plot(error)
-    plt.title(f'RMSE convergence over {len(error)} iterations')
+    for loss in ('hinge', 'exp','logistic'):
+        gd = GradientDescent(loss=loss)
+        error = gd.get_descent_rmse()
+        plt.plot(error, label=loss)
+    plt.title(f'Comparing RMSE convergence of different loss functions over {len(error)} iterations')
     plt.show()
