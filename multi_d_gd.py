@@ -22,7 +22,7 @@ def RMSE(y, y_hat):
     return np.sqrt(sum((y - y_hat) ** 2) / len(y))
 
 
-def gradientDescent(x, y, x_test, y_test, theta, alpha, phi,rmse_cutoff):
+def gradientDescent(x, y, x_test, y_test, theta, alpha, phi, rmse_cutoff):
     RMSEs = []
     m = len(x)
     rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
@@ -63,8 +63,6 @@ if __name__ == '__main__':
     loss_functions = {'hinge': lambda x: max(0, 1 + x),
                       'exp': lambda x: np.exp(x),
                       'logistic': lambda x: np.log2(1 + np.exp(x))}
-
-
 
     thetas, error = gradientDescent(x_train,
                                     y_train,
