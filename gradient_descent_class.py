@@ -122,12 +122,12 @@ if __name__ == '__main__':
     step = 0.1
     for dim in [3, 5, 10]:
         dim_plot = plot_descent(mu, dim, n, step)
-        dim_plot.show()
+        plt.savefig(f'sgd_{d}dim_size{n}_{step}step.png')
 
     for sample_size in [200, 1000, 5000]:
         n_plot = plot_descent(mu, d, sample_size, step)
-        n_plot.show()
+        plt.savefig(f'sgd_{d}dim_size{n}_{step}step.png')
 
     for step_size in [0.1, 0.01, 0.001]:
         step_plot = plot_descent(mu, d, n, step_size)
-        step_plot.show()
+        plt.savefig(f'sgd_{d}dim_size{n}_{step}step.png')
