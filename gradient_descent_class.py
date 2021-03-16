@@ -1,16 +1,20 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
+import random
 
 class GradientDescent:
     def __init__(self,
-                 data_params=(4, 0.4, 1000),
+                 data_params=(0.4, 4,1000),
                  step=0.1,
-                 loss='hinge'):
+                 loss='hinge',
+                 stochastic=True):
         self.mu, self.d, self.n = data_params
         self.data = self.generate_data()
         self.x_train, self.x_test, self.y_train, self.y_test = self.test_train_split()
-        self.theta_init = np.random.uniform(0.0, 1.0, size=self.d)
-        self.tuning_param = self.set_loss_function(loss)
+        self.theta = np.random.uniform(0.0, 1.0, size=self.d)
+        self.tuning_param = step
+        self.phi = self.set_loss_function(loss)
+        self.is_stochastic = stochastic
 
     def generate_data(self):
         mu, d, n = self.mu, self.d, self.n
@@ -39,8 +43,71 @@ class GradientDescent:
                           'logistic': lambda x: np.log2(1 + np.exp(x))}
         return loss_functions[loss_name]
 
+    def dot_product(self, x, w):
+        return w.T @ x
+
+    def RMSE(self, y):
+        return np.sqrt(sum((y - self.y_test) ** 2) / len(y))
+
+    def get_descent_rmse(self):
+        return self.stochasticGradientDescent() if self.is_stochastic else self.gradientDescent()
+
+    def stochasticGradientDescent(self, rmse_cutoff=0.7):
+        x_train, x_text = self.x_train, self.x_test
+        y_train, y_test = self.y_train, self.y_test
+        phi = self.phi
+        theta = self.theta
+
+        RMSEs = []
+        m = len(x_train)
+        rmse = self.RMSE([self.dot_product(x, theta) for x in x_text])
+        iterations = 0
+
+        while rmse > rmse_cutoff and iterations < 15000:
+            print(theta)
+            iterations += 1
+            i = random.randint(0, len(x_train) - 1)  # random point index
+            for j in range(len(theta)):
+                gradient = phi(self.dot_product(x_train[i], theta) - y_train[i]) * x_train[i][j]
+                gradient *= 1 / m
+                theta[j] = theta[j] - (self.tuning_param * gradient)
+            y_pred = [self.dot_product(x, theta) for x in x_text]
+            rmse = self.RMSE(y_pred)
+            RMSEs.append(rmse)
+        return RMSEs
+
+    def gradientDescent(self, rmse_cutoff=0.7):
+        x_train, x_text = self.x_train, self.x_test
+        y_train, y_test = self.y_train, self.y_test
+        phi = self.phi
+        theta = self.theta
+
+        RMSEs = []
+        m = len(x_train)
+        rmse = self.RMSE([self.dot_product(x, theta) for x in x_text])
+        iterations = 0
+
+        while rmse > rmse_cutoff and iterations < 3000:
+            print(theta)
+            iterations += 1
+            for j in range(len(theta)):
+                gradient = 0
+                for i in range(m):
+                    gradient += phi(self.dot_product(x_train[i], theta) - y_train[i]) * x_train[i][j]
+                gradient *= 1 / m
+                theta[j] = theta[j] - (self.tuning_param * gradient)
+            y_pred = [self.dot_product(x, theta) for x in x_text]
+            rmse = self.RMSE(y_pred, y_test)
+            RMSEs.append(rmse)
+        return RMSEs
+
 
 if __name__ == '__main__':
-    data_dims = (5, 3, 200)  # dimensions of the data distribution
-    step_size = 0.1
-    gd = GradientDescent(data_dims, step_size, 'hinge')
+    # data_dims = (5, 3, 1000)  # mu, d, n dimensions of the data distribution
+    # step_size = 0.1
+    default_gd = GradientDescent()
+
+    error = default_gd.get_descent_rmse()
+    plt.plot(error)
+    plt.title(f'RMSE convergence over {len(error)} iterations')
+    plt.show()
