@@ -22,7 +22,7 @@ def RMSE(y, y_hat):
     return np.sqrt(sum((y - y_hat) ** 2) / len(y))
 
 
-def gradientDescent(x, y, x_test, y_test, theta, alpha, rmse_cutoff):
+def gradientDescent(x, y, x_test, y_test, theta, alpha, phi,rmse_cutoff):
     RMSEs = []
     m = len(x)
     rmse = RMSE([dot_product(x, theta) for x in x_test], y_test)
@@ -34,7 +34,7 @@ def gradientDescent(x, y, x_test, y_test, theta, alpha, rmse_cutoff):
         for j in range(len(theta)):
             gradient = 0
             for i in range(m):
-                gradient += (dot_product(x[i], theta) - y[i]) * x[i][j]
+                gradient += phi(dot_product(x[i], theta) - y[i]) * x[i][j]
             gradient *= 1 / m
             theta[j] = theta[j] - (alpha * gradient)
         y_pred = [dot_product(x, theta) for x in x_test]
@@ -55,16 +55,25 @@ if __name__ == '__main__':
 
     y = np.asarray([a[-1] for a in data])
     y_train, y_train = y[:int(len(y) * 0.7)], y[int(len(y) * 0.3):]
+
     theta_init = np.random.uniform(0.0, 1.0, size=d)
 
     tuning_param = 0.001
+
+    loss_functions = {'hinge': lambda x: max(0, 1 + x),
+                      'exp': lambda x: np.exp(x),
+                      'logistic': lambda x: np.log2(1 + np.exp(x))}
+
+
+
     thetas, error = gradientDescent(x_train,
                                     y_train,
                                     x_test,
                                     y_train,
                                     theta_init,
                                     tuning_param,
-                                    0.8)
+                                    loss_functions['hinge'],
+                                    0.7)
 
     plt.plot(error)
     plt.title(f'RMSE convergence over {len(error)} iterations')
